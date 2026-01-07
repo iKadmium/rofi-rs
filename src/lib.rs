@@ -280,9 +280,12 @@ where
     }
 
     /// Sets the selected row (highlighted row)
-    pub fn selected_row(&mut self, index: usize) -> &mut Self {
+    pub fn selected_row(&mut self, index: usize) -> Result<&mut Self, Error> {
+        if index >= self.elements.len() {
+            return Err(Error::SelectedRowOutOfBounds);
+        }
         self.selected_row = Some(index);
-        self
+        Ok(self)
     }
 
     /// Sets the case sensitivity (disabled by default)
@@ -497,6 +500,9 @@ pub enum Error {
     /// Error returned the width is invalid, only returned in Rofi::width()
     #[error("Invalid width: {0}")]
     InvalidWidth(&'static str),
+    /// Returned when the selected row index is greater than the number of elements
+    #[error("Selected row index out of bounds")]
+    SelectedRowOutOfBounds,
     /// Error, when the input of the user is not found. This only occurs when
     /// getting the index.
     #[error("User input was not found")]
