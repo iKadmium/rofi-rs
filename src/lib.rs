@@ -116,6 +116,7 @@ where
     case_sensitive: bool,
     lines: Option<usize>,
     message: Option<String>,
+    selected_row: Option<usize>,
     width: Width,
     format: Format,
     args: Vec<String>,
@@ -215,6 +216,7 @@ where
             elements,
             case_sensitive: false,
             lines: None,
+            selected_row: None,
             width: Width::None,
             format: Format::Text,
             args: Vec::new(),
@@ -275,6 +277,12 @@ where
         w.check()?;
         self.width = w;
         Ok(self)
+    }
+
+    /// Sets the selected row (highlighted row)
+    pub fn selected_row(&mut self, index: usize) -> &mut Self {
+        self.selected_row = Some(index);
+        self
     }
 
     /// Sets the case sensitivity (disabled by default)
@@ -360,6 +368,11 @@ where
             .arg(match self.lines.as_ref() {
                 Some(s) => format!("{}", s),
                 None => format!("{}", self.elements.len()),
+            })
+            .arg("-selected-row")
+            .arg(match self.selected_row.as_ref() {
+                Some(s) => format!("{}", s),
+                None => "0".to_string(),
             })
             .arg(match self.case_sensitive {
                 true => "-case-sensitive",
